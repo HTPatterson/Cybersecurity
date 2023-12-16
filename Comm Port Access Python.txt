@@ -1,0 +1,41 @@
+You can use the serial library in Python to monitor and detect unauthorized access to COM ports. Below is a simple example program that checks for changes in the list of available COM ports and alerts if any new port is detected:
+
+
+import serial.tools.list_ports
+import time
+import ctypes
+
+def get_available_ports():
+    return [port.device for port in serial.tools.list_ports.comports()]
+
+def alert(message):
+    ctypes.windll.user32.MessageBoxW(0, message, "Unauthorized COM Port Access", 1)
+
+def monitor_ports():
+    previous_ports = get_available_ports()
+
+    while True:
+        current_ports = get_available_ports()
+
+        if current_ports != previous_ports:
+            new_ports = set(current_ports) - set(previous_ports)
+            if new_ports:
+                alert(f"Unauthorized access to COM port(s): {', '.join(new_ports)}")
+
+        previous_ports = current_ports
+        time.sleep(1)
+
+if __name__ == "__main__":
+    monitor_ports()
+
+
+This script uses the serial.tools.list_ports module to get a list of available COM ports. It then continuously monitors for changes in the list of ports. If any new ports are detected, it triggers an alert.
+
+Note: This example is for Windows, and the alert uses the ctypes library for a simple pop-up message box. If you are using a different operating system or want a different way of alerting, you may need to modify the code accordingly.
+
+Remember to run this script with appropriate permissions, especially if it's monitoring ports that require elevated privileges.
+
+
+
+
+
